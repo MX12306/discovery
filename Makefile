@@ -1,6 +1,6 @@
 # Go parameters
 GOCMD=GO111MODULE=on CGO_ENABLED=0 go
-GOBUILD=$(GOCMD) build
+GOBUILD=$(GOCMD) build -mod=vendor
 GOTEST=$(GOCMD) test
 
 all: test build
