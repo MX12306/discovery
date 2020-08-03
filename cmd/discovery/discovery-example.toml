@@ -1,14 +1,14 @@
 
-# 同一discovery集群的所有node节点地址，包含本node
-nodes = ["127.0.0.1:7171"]
+# 同一discovery集群的所有node节点地址
+# 不必包括当前node，初始化时内部自动导入httpServer.addr中的地址
+nodes = []
 enableprotect=false
 # 本可用区zone(一般指机房)标识
 [env]
 region = "sh"
 zone = "sh001"
-host = "test1"
+#host = "test1"
 DeployEnv = "dev"
-
 
 # 其他可用区zone访问host和其标识
 # [zones]
@@ -16,7 +16,8 @@ DeployEnv = "dev"
 # "sh003" = ["10.3.0.10:7171", "10.3.0.11:7171", "10.3.0.12:7171"]
 
 # 本节点监听端口
-# 注意：ip别配置为0.0.0.0或者127.0.0.1
+# #注意：ip别配置为0.0.0.0或者127.0.0.1
+# 当IP配置为0.0.0.0或者127.0.0.1时，内部将使用出口网卡的地址作为ip
 [httpServer]
 addr = "127.0.0.1:7171"
 timeout="40s"
@@ -28,3 +29,7 @@ timeout="40s"
 dial = "1s"
 keepAlive = "120s"
 timeout="40s"
+
+[log]
+stdout=true
+#dir="./var/log/discovery"

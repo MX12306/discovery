@@ -16,3 +16,6 @@
 cmd/discovery/discovery
 dist/
 configs/
+
+.idea
+.vscode

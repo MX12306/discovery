@@ -2,6 +2,9 @@ package conf
 
 import (
 	"flag"
+	"github.com/bilibili/kratos/pkg/conf/env"
+	"github.com/bilibili/kratos/pkg/net/ip"
+	"net"
 	"os"
 
 	"github.com/BurntSushi/toml"
@@ -11,11 +14,7 @@ import (
 )
 
 var (
-	confPath      string
 	schedulerPath string
-	region        string
-	zone          string
-	deployEnv     string
 	hostname      string
 	configKey     string
 	// Conf conf
@@ -28,7 +27,7 @@ func init() {
 		hostname = os.Getenv("HOSTNAME")
 	}
 	flag.StringVar(&configKey, "confkey", "discovery-example.toml", "discovery conf key")
-	flag.StringVar(&hostname, "hostname", hostname, "machine hostname")
+	//flag.StringVar(&hostname, "hostname", hostname, "machine hostname")
 	flag.StringVar(&schedulerPath, "scheduler", "scheduler.json", "scheduler info")
 }
 
@@ -50,17 +49,31 @@ func (c *Config) Fix() (err error) {
 		c.Env = new(Env)
 	}
 	if c.Env.Region == "" {
-		c.Env.Region = region
+		c.Env.Region = env.Region
 	}
 	if c.Env.Zone == "" {
-		c.Env.Zone = zone
+		c.Env.Zone = env.Zone
 	}
 	if c.Env.Host == "" {
 		c.Env.Host = hostname
 	}
 	if c.Env.DeployEnv == "" {
-		c.Env.DeployEnv = deployEnv
+		c.Env.DeployEnv = env.DeployEnv
 	}
+
+	// check ip address
+	addr, port, err := net.SplitHostPort(c.HTTPServer.Addr)
+	if err != nil {
+		return
+	}
+	if addr == "0.0.0.0" || addr == "127.0.0.1" || addr == "" {
+		addr = ip.InternalIP()
+	}
+	c.HTTPServer.Addr = addr + ":" + port
+
+	// add node
+	c.Nodes = append(c.Nodes, c.HTTPServer.Addr)
+
 	return
 }
 
